@@ -33,7 +33,7 @@ final class TimeBlock {
 
 extension TimeBlock {
     @Transient
-    var duration: ClosedRange<Date> {
-        startTime...(endTime ?? Date.now)
+    var duration: Range<Date> {
+        startTime ..< (endTime ?? Date.now)
     }
 }

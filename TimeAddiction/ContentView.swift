@@ -32,9 +32,9 @@ struct ContentView: View {
 }
 
 fileprivate struct DayBlockView: View {
+    @State var isDatePickerSheet: Bool = false
     @Environment(\.modelContext) var modelContext
     @Query var dayBlocks: [DayBlock]
-    @State var value: Int?
     @State var selectedTimeBlock: TimeBlock?
     @Binding var selectedDate: Date
     
@@ -52,8 +52,8 @@ fileprivate struct DayBlockView: View {
             Group {
                 if let dayBlock = dayBlocks.first {
                     List(selection: $selectedTimeBlock) {
-                        ForEach(dayBlock.timeBlocks) { timeBlock in
-                            NavigationLink(timeBlock.name, value: timeBlock)
+                        ForEach(dayBlock.timeBlocks) {
+                            navigationItem(timeBlock: $0)
                         }
                     }
                     .overlay {
@@ -84,6 +84,26 @@ fileprivate struct DayBlockView: View {
                 modelContext.insert(newBlock)
             }
         }
+        .sheet(isPresented: $isDatePickerSheet) {
+            DatePickerSheet(selectedDate: $selectedDate)
+                .presentationDetents([.fraction(0.7)])
+                .presentationDragIndicator(.visible)
+        }
+    }
+    
+    @ViewBuilder
+    func navigationItem(timeBlock: TimeBlock) -> some View {
+        let name = timeBlock.name
+        let duration = timeBlock.duration
+            .formatted(.components(style: .narrow, fields: [.hour, .minute]))
+        
+        NavigationLink(value: timeBlock) {
+            HStack {
+                Text(name)
+                Spacer()
+                Text(duration)
+            }
+        }
     }
     
     var titleMenu: ToolbarTitleMenu<some View> {
@@ -98,11 +118,11 @@ fileprivate struct DayBlockView: View {
                     .symbolRenderingMode(.palette)
                     .foregroundStyle(.blue)
             }
-            Button {} label: {
+            Button { isDatePickerSheet = true } label: {
                 Label("날짜 선택", systemImage: "calendar")
                     .symbolRenderingMode(.palette)
             }
-            Button {} label: {
+            Button { selectedDate = today } label: {
                 Label("오늘로 이동", systemImage: "star.fill")
                     .symbolRenderingMode(.palette)
             }
@@ -118,6 +138,7 @@ fileprivate struct DayBlockView: View {
             }
             .buttonStyle(.borderedProminent)
             .buttonBorderShape(.capsule)
+            .disabled(selectedDate != today)
         }
     }
     
@@ -136,6 +157,38 @@ fileprivate struct DayBlockView: View {
             Text("오늘은 놀지 않으셨군요!")
         }
         .allowsHitTesting(false)
+    }
+}
+
+struct DatePickerSheet: View {
+    @Environment(\.dismiss) var dismiss
+
+    @State var previousDate: Date = Date(timeIntervalSinceReferenceDate: 0)
+    @Binding var selectedDate: Date
+    
+    var body: some View {
+        NavigationStack {
+            DatePicker("날짜 선택", selection: $selectedDate, displayedComponents: [.date])
+                .datePickerStyle(.graphical)
+                .frame(maxWidth: .infinity)
+                .navigationTitle("날짜 선택")
+                .navigationBarTitleDisplayMode(.inline)
+                .toolbar {
+                    ToolbarItem(placement: .confirmationAction) {
+                        Button("확인") { dismiss() }
+                    }
+                    
+                    ToolbarItem(placement: .cancellationAction) {
+                        Button("취소", role: .cancel) {
+                            selectedDate = previousDate
+                            dismiss()
+                        }
+                    }
+                }
+        }
+        .onAppear {
+            previousDate = selectedDate
+        }
     }
 }
 
