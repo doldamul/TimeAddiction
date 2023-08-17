@@ -110,6 +110,10 @@ extension DayBlockView {
             modelContext.insert(newBlock)
         }
     }
+    
+    func deleteTimeBlock(timeBlock: TimeBlock) {
+        modelContext.delete(timeBlock)
+    }
 }
 
 // MARK: View extension
@@ -125,6 +129,13 @@ extension DayBlockView {
                 Text(name)
                 Spacer()
                 Text(duration)
+            }
+        }
+        .contextMenu {
+            Button(role: .destructive) {
+                deleteTimeBlock(timeBlock: timeBlock)
+            } label: {
+                Label("삭제", systemImage: "trash")
             }
         }
     }
