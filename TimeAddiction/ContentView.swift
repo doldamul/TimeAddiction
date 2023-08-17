@@ -22,6 +22,9 @@ struct ContentView: View {
 
     var body: some View {
         DayBlockView(fetchDescriptor, selectedDate: $selectedDate)
+            .onReceive(NotificationCenter.default.publisher(for: UIApplication.significantTimeChangeNotification)) { _ in
+                if selectedDate != Date.today { selectedDate = Date.today }
+            }
             .onChange(of: selectedDate) { (_, newDate) in
                 fetchDescriptor.predicate = #Predicate<DayBlock> { newDate == $0.date }
             }
