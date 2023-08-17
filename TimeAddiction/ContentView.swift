@@ -49,15 +49,16 @@ fileprivate struct DayBlockView: View {
                     ForEach(dayBlock.timeBlocks) {
                         navigationItem(timeBlock: $0)
                     }
-                    .overlay {
-                        Self.timeBlockUnavailable
-                            .opacity(dayBlock.timeBlocks.isEmpty ? 1 : 0)
-                    }
                 }
             }
             .overlay {
-                Self.dayBlockUnavailable
-                    .opacity(dayBlocks.isEmpty ? 1 : 0)
+                if let dayBlock = dayBlocks.first {
+                    if dayBlock.timeBlocks.isEmpty {
+                        Self.timeBlockUnavailable
+                    }
+                } else {
+                    Self.dayBlockUnavailable
+                }
             }
             .navigationTitle(navTitle)
             .navigationBarTitleDisplayMode(.inline)
