@@ -36,6 +36,8 @@ fileprivate struct DayBlockView: View {
     @Query var dayBlocks: [DayBlock]
     @State var selectedTimeBlock: TimeBlock?
     @State var isDatePickerSheet: Bool = false
+    @State var isTimeBlockAddingSheet: Bool = false
+    @State var timeBlockSheetTempTitle: String = ""
     
     init(_ fetchDescriptor: FetchDescriptor<DayBlock>, selectedDate: Binding<Date>) {
         self._dayBlocks = Query(fetchDescriptor)
@@ -81,11 +83,14 @@ fileprivate struct DayBlockView: View {
         .sheet(isPresented: $isDatePickerSheet) {
             DatePickerSheet(selectedDate: $selectedDate)
         }
+        .sheet(isPresented: $isTimeBlockAddingSheet) {
+            TimeBlockAddingSheet(title: $timeBlockSheetTempTitle, dayBlock: dayBlocks.first!)
+        }
     }
 }
 
 extension Date {
-    fileprivate static var today: Date {
+    static var today: Date {
         Calendar.current.startOfDay(for: Date.now)
     }
 }
@@ -146,7 +151,7 @@ extension DayBlockView {
     
     var bottomBarItem: ToolbarItem<(), some View> {
         .init(placement: .status) {
-            Button {} label: {
+            Button { isTimeBlockAddingSheet = true } label: {
                 Label("타임블록 추가", systemImage: "plus")
                     .symbolVariant(.circle.fill)
                     .labelStyle(.titleAndIcon)

@@ -21,11 +21,11 @@ final class TimeBlock {
     
     var parentDay: DayBlock?
     
-    init(_ name: String, startTime: Date, endTime: Date? = nil, subSpace: Bool = true) {
+    init(_ name: String, startTime: Date, subSpace: Bool = true) {
         self.name = name
         self.memo = ""
         self.startTime = startTime
-        self.endTime = endTime
+        self.endTime = nil
         self.subBlocks = subSpace ? [] : nil
         self.parent = nil
     }
