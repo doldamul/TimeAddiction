@@ -8,14 +8,11 @@
 import SwiftUI
 import SwiftData
 
-// TODO: change to Date.today or not
-fileprivate var today: Date {
-    Calendar.current.startOfDay(for: Date.now)
-}
-
+// MARK: FetchDescriptor Inject View
 struct ContentView: View {
-    @State var selectedDate: Date = today
+    @State var selectedDate: Date = .today
     @State var fetchDescriptor: FetchDescriptor<DayBlock> = {
+        let today = Date.today
         let predicate = #Predicate<DayBlock> { today == $0.date }
         var fetchDescriptor = FetchDescriptor<DayBlock>(predicate: predicate)
         fetchDescriptor.fetchLimit = 1
@@ -31,16 +28,14 @@ struct ContentView: View {
     }
 }
 
+// MARK: Main View
 fileprivate struct DayBlockView: View {
-    @State var isDatePickerSheet: Bool = false
     @Environment(\.modelContext) var modelContext
+    
+    @Binding var selectedDate: Date
     @Query var dayBlocks: [DayBlock]
     @State var selectedTimeBlock: TimeBlock?
-    @Binding var selectedDate: Date
-    
-    var navTitle: String {
-        selectedDate.formatted(.dateTime.day().month())
-    }
+    @State var isDatePickerSheet: Bool = false
     
     init(_ fetchDescriptor: FetchDescriptor<DayBlock>, selectedDate: Binding<Date>) {
         self._dayBlocks = Query(fetchDescriptor)
@@ -49,20 +44,20 @@ fileprivate struct DayBlockView: View {
     
     var body: some View {
         NavigationSplitView {
-            Group {
+            List(selection: $selectedTimeBlock) {
                 if let dayBlock = dayBlocks.first {
-                    List(selection: $selectedTimeBlock) {
-                        ForEach(dayBlock.timeBlocks) {
-                            navigationItem(timeBlock: $0)
-                        }
+                    ForEach(dayBlock.timeBlocks) {
+                        navigationItem(timeBlock: $0)
                     }
                     .overlay {
                         Self.timeBlockUnavailable
                             .opacity(dayBlock.timeBlocks.isEmpty ? 1 : 0)
                     }
-                } else {
-                    Self.dayBlockUnavailable
                 }
+            }
+            .overlay {
+                Self.dayBlockUnavailable
+                    .opacity(dayBlocks.isEmpty ? 1 : 0)
             }
             .navigationTitle(navTitle)
             .navigationBarTitleDisplayMode(.inline)
@@ -71,26 +66,45 @@ fileprivate struct DayBlockView: View {
                 bottomBarItem
             }
         } detail: {
-            if let timeBlock = selectedTimeBlock {
-                Text("preview 시작 시각: \(timeBlock.startTime.formatted(.dateTime))")
-            } else {
-                // TODO: ContentUnavailableView
-                Text("not selected")
+            Group {
+                if let timeBlock = selectedTimeBlock {
+                    Text("preview 시작 시각: \(timeBlock.startTime.formatted(.dateTime))")
+                } else {
+                    Self.detailUnavailable
+                }
             }
         }
         .onChange(of: selectedDate) { (_, newDate) in
-            if dayBlocks.isEmpty && newDate == today {
-                let newBlock = DayBlock(today)
-                modelContext.insert(newBlock)
-            }
+            checkAndAddDayBlock(date: newDate)
         }
         .sheet(isPresented: $isDatePickerSheet) {
             DatePickerSheet(selectedDate: $selectedDate)
-                .presentationDetents([.fraction(0.7)])
-                .presentationDragIndicator(.visible)
         }
     }
+}
+
+extension Date {
+    fileprivate static var today: Date {
+        Calendar.current.startOfDay(for: Date.now)
+    }
+}
+
+// MARK: logic extension
+extension DayBlockView {
+    var navTitle: String {
+        selectedDate.formatted(.dateTime.day().month())
+    }
     
+    func checkAndAddDayBlock(date: Date) {
+        if dayBlocks.isEmpty && date == Date.today {
+            let newBlock = DayBlock(date)
+            modelContext.insert(newBlock)
+        }
+    }
+}
+
+// MARK: View extension
+extension DayBlockView {
     @ViewBuilder
     func navigationItem(timeBlock: TimeBlock) -> some View {
         let name = timeBlock.name
@@ -122,7 +136,7 @@ fileprivate struct DayBlockView: View {
                 Label("날짜 선택", systemImage: "calendar")
                     .symbolRenderingMode(.palette)
             }
-            Button { selectedDate = today } label: {
+            Button { selectedDate = Date.today } label: {
                 Label("오늘로 이동", systemImage: "star.fill")
                     .symbolRenderingMode(.palette)
             }
@@ -138,7 +152,7 @@ fileprivate struct DayBlockView: View {
             }
             .buttonStyle(.borderedProminent)
             .buttonBorderShape(.capsule)
-            .disabled(selectedDate != today)
+            .disabled(selectedDate != Date.today)
         }
     }
     
@@ -148,6 +162,7 @@ fileprivate struct DayBlockView: View {
         } description: {
             Text("타임블록은 당일에만 생성할 수 있습니다.")
         }
+        .allowsHitTesting(false)
     }
     
     static var timeBlockUnavailable: some View {
@@ -158,50 +173,29 @@ fileprivate struct DayBlockView: View {
         }
         .allowsHitTesting(false)
     }
+    
+    static var detailUnavailable: some View {
+        ContentUnavailableView {
+            Label("선택되지 않음", systemImage: "filemenu.and.cursorarrow")
+        } description: {
+            Text("타임블록을 선택해 주세요.")
+        }
+        .allowsHitTesting(false)
+    }
 }
 
-struct DatePickerSheet: View {
-    @Environment(\.dismiss) var dismiss
-
-    @State var previousDate: Date = Date(timeIntervalSinceReferenceDate: 0)
-    @Binding var selectedDate: Date
-    
-    var body: some View {
-        NavigationStack {
-            DatePicker("날짜 선택", selection: $selectedDate, displayedComponents: [.date])
-                .datePickerStyle(.graphical)
-                .frame(maxWidth: .infinity)
-                .navigationTitle("날짜 선택")
-                .navigationBarTitleDisplayMode(.inline)
-                .toolbar {
-                    ToolbarItem(placement: .confirmationAction) {
-                        Button("확인") { dismiss() }
-                    }
-                    
-                    ToolbarItem(placement: .cancellationAction) {
-                        Button("취소", role: .cancel) {
-                            selectedDate = previousDate
-                            dismiss()
-                        }
-                    }
-                }
-        }
-        .onAppear {
-            previousDate = selectedDate
-        }
-    }
+// MARK: Preview
+#Preview("Main") {
+    ContentView()
+        .modelContainer(PreviewSwiftData.container)
 }
 
 #Preview("Unavailable") {
     TabView {
         DayBlockView.dayBlockUnavailable
         DayBlockView.timeBlockUnavailable
+        DayBlockView.detailUnavailable
     }
     .tabViewStyle(.page(indexDisplayMode: .always))
     .background(.regularMaterial)
-}
-
-#Preview("Main") {
-    ContentView()
-        .modelContainer(PreviewSwiftData.container)
 }

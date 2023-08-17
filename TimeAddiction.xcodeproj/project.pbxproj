@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		2A152AC62A8D9BE6009B1D1D /* DatePickerSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A152AC52A8D9BE6009B1D1D /* DatePickerSheet.swift */; };
 		2AF56BD22A8C807F00CAC481 /* TimeAddictionApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2AF56BD12A8C807F00CAC481 /* TimeAddictionApp.swift */; };
 		2AF56BD42A8C807F00CAC481 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2AF56BD32A8C807F00CAC481 /* ContentView.swift */; };
 		2AF56BD62A8C808100CAC481 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 2AF56BD52A8C808100CAC481 /* Assets.xcassets */; };
@@ -17,6 +18,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		2A152AC52A8D9BE6009B1D1D /* DatePickerSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DatePickerSheet.swift; sourceTree = "<group>"; };
 		2AF56BCE2A8C807F00CAC481 /* TimeAddiction.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = TimeAddiction.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		2AF56BD12A8C807F00CAC481 /* TimeAddictionApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimeAddictionApp.swift; sourceTree = "<group>"; };
 		2AF56BD32A8C807F00CAC481 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -63,6 +65,7 @@
 				2AF56BD72A8C808100CAC481 /* Preview Content */,
 				2AF56BDF2A8C813400CAC481 /* TimeBlock.swift */,
 				2AF56BE12A8C849300CAC481 /* DayBlock.swift */,
+				2A152AC52A8D9BE6009B1D1D /* DatePickerSheet.swift */,
 			);
 			path = TimeAddiction;
 			sourceTree = "<group>";
@@ -147,6 +150,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				2AF56BE02A8C813400CAC481 /* TimeBlock.swift in Sources */,
+				2A152AC62A8D9BE6009B1D1D /* DatePickerSheet.swift in Sources */,
 				2AF56BD42A8C807F00CAC481 /* ContentView.swift in Sources */,
 				2AF56BE22A8C849300CAC481 /* DayBlock.swift in Sources */,
 				2AF56BE42A8C8CB600CAC481 /* PreviewSwiftData.swift in Sources */,
