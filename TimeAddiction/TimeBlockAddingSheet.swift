@@ -57,9 +57,14 @@ struct TimeBlockAddingSheet: View {
         
         /// cannot call TimeBlock.init; seems like a bug - workaround
         let newBlock = TimeBlock.preview
-        newBlock.name = name
+        let newSubBlock = TimeBlock.preview
         modelContext.insert(newBlock)
+        modelContext.insert(newSubBlock)
+        newBlock.name = name
         dayBlock.timeBlocks.append(newBlock)
+        newBlock.subBlocks!.append(newSubBlock)
+        newSubBlock.startTime = newBlock.startTime
+        newSubBlock.name = "1번째 판"
         title = ""
         dismiss()
     }

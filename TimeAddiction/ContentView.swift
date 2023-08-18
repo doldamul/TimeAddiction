@@ -51,7 +51,9 @@ fileprivate struct DayBlockView: View {
         NavigationSplitView {
             List(selection: $selectedTimeBlock) {
                 if let dayBlock = dayBlocks.first {
-                    ForEach(dayBlock.timeBlocks) {
+                    let comparator = KeyPathComparator<TimeBlock>(\.startTime)
+                    let timeBlocks = dayBlock.timeBlocks.sorted(using: comparator)
+                    ForEach(timeBlocks) {
                         navigationItem(timeBlock: $0)
                     }
                 }
@@ -65,6 +67,7 @@ fileprivate struct DayBlockView: View {
                     Self.dayBlockUnavailable
                 }
             }
+            .navigationTitle(titleFormatted)
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 title
@@ -72,13 +75,14 @@ fileprivate struct DayBlockView: View {
                 bottomBarItem
             }
         } detail: {
-            Group {
-                if let timeBlock = selectedTimeBlock {
-                    Text("preview 시작 시각: \(timeBlock.startTime.formatted(.dateTime))")
-                } else {
-                    Self.detailUnavailable
-                }
+            if let selectedTimeBlock {
+                TimeBlockView(rootTimeBlock: selectedTimeBlock)
+            } else {
+                Self.detailUnavailable
             }
+        }
+        .onAppear {
+            checkAndAddDayBlock(date: selectedDate)
         }
         .onChange(of: selectedDate) { (_, newDate) in
             checkAndAddDayBlock(date: newDate)
@@ -185,14 +189,31 @@ extension DayBlockView {
     
     var bottomBarItem: ToolbarItem<(), some View> {
         .init(placement: .status) {
-            Button { isTimeBlockAddingSheet = true } label: {
-                Label("타임블록 추가", systemImage: "plus")
-                    .symbolVariant(.circle.fill)
-                    .labelStyle(.titleAndIcon)
+            let comparator = KeyPathComparator<TimeBlock>(\.startTime)
+            let timeBlocks = dayBlocks.first?.timeBlocks.sorted(using: comparator)
+            if let timeBlock = timeBlocks?.last, timeBlock.endTime == nil {
+                Button {
+                    let orderedSubBlocks = timeBlock.subBlocks!.sorted(using: comparator)
+                    
+                    let lastSubBlock = orderedSubBlocks.last!
+                    lastSubBlock.endTime = Date.now
+                    timeBlock.endTime = lastSubBlock.endTime
+                } label: {
+                    Label("타임블록 종료", systemImage: "timer")
+                        .labelStyle(.titleAndIcon)
+                }
+                .buttonStyle(.bordered)
+                .buttonBorderShape(.capsule)
+            } else {
+                Button { isTimeBlockAddingSheet = true } label: {
+                    Label("타임블록 추가", systemImage: "plus")
+                        .symbolVariant(.circle.fill)
+                        .labelStyle(.titleAndIcon)
+                }
+                .buttonStyle(.borderedProminent)
+                .buttonBorderShape(.capsule)
+                .disabled(selectedDate != Date.today)
             }
-            .buttonStyle(.borderedProminent)
-            .buttonBorderShape(.capsule)
-            .disabled(selectedDate != Date.today)
         }
     }
     

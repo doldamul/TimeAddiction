@@ -17,8 +17,9 @@ actor PreviewSwiftData {
         
         var dayBlock = DayBlock.preview
         var timeBlock = TimeBlock.preview
+        var subBlock = TimeBlock.preview
         let sampleData: [any PersistentModel] = [
-            timeBlock, dayBlock
+            timeBlock, dayBlock, subBlock
         ]
         
         sampleData.forEach {
@@ -26,6 +27,8 @@ actor PreviewSwiftData {
         }
         
         dayBlock.timeBlocks.append(timeBlock)
+        timeBlock.subBlocks = [subBlock]
+        subBlock.name = "1번째 판"
         return container
     }()
 }

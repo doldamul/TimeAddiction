@@ -15,7 +15,7 @@ final class TimeBlock {
     var startTime: Date
     var endTime: Date?
     
-    @Relationship(inverse: \TimeBlock.parent)
+    @Relationship(deleteRule: .cascade, inverse: \TimeBlock.parent)
     var subBlocks: [TimeBlock]?
     var parent: TimeBlock?
     
