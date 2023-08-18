@@ -65,9 +65,9 @@ fileprivate struct DayBlockView: View {
                     Self.dayBlockUnavailable
                 }
             }
-            .navigationTitle(navTitle)
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
+                title
                 titleMenu
                 bottomBarItem
             }
@@ -100,7 +100,7 @@ extension Date {
 
 // MARK: logic extension
 extension DayBlockView {
-    var navTitle: String {
+    var titleFormatted: String {
         selectedDate.formatted(.dateTime.day().month())
     }
     
@@ -140,6 +140,24 @@ extension DayBlockView {
         }
     }
     
+    var title: ToolbarItem<(), some View> {
+        .init(placement: .principal) {
+            if selectedDate == Date.today {
+                Label {
+                    Text(titleFormatted)
+                } icon: {
+                    Image(systemName: "star.fill")
+                        .symbolRenderingMode(.palette)
+                        .foregroundStyle(.yellow)
+                        .font(.footnote)
+                }
+                .labelStyle(.titleAndIcon)
+            } else {
+                Text(titleFormatted)
+            }
+        }
+    }
+    
     var titleMenu: ToolbarTitleMenu<some View> {
         .init {
             Button {} label: {
@@ -157,9 +175,11 @@ extension DayBlockView {
                     .symbolRenderingMode(.palette)
             }
             Button { selectedDate = Date.today } label: {
-                Label("오늘로 이동", systemImage: "star.fill")
+                Label("오늘로 이동", systemImage: "star")
                     .symbolRenderingMode(.palette)
+                    .symbolVariant(selectedDate == Date.today ? .none : .fill)
             }
+            .disabled(selectedDate == Date.today)
         }
     }
     
