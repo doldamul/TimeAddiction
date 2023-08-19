@@ -33,44 +33,86 @@ struct TimeBlockView: View {
     var body: some View {
         NavigationStack(path: $subBlockPath) {
             VStack {
-                List {
-                    HStack {
-                        Text(" ")
-                        Spacer()
-                        Text("\(startTimeFormatted) 시작")
-                            .bold()
-                    }
-                    .listRowSeparator(.hidden, edges: .top)
-                    
-                    let comparator = KeyPathComparator<TimeBlock>(\.startTime)
-                    if let subBlocks = rootTimeBlock.subBlocks?.sorted(using: comparator) {
-                        ForEach(subBlocks) { subBlock in
-                            let name = subBlock.name
-                            let duration = subBlock.duration
-                                .formatted(.components(style: .narrow, fields: [.hour, .minute]))
-                            
-                            NavigationLink(value: subBlock) {
-                                HStack {
-                                    Text(name)
-                                    Spacer()
-                                    Text(duration)
+                GeometryReader { proxy in
+                    List {
+                        HStack {
+                            Text(" ")
+                            Spacer()
+                            Text("\(startTimeFormatted) 시작")
+                                .bold()
+                        }
+                        .listRowSeparator(.hidden, edges: .top)
+                        
+                        let comparator = KeyPathComparator<TimeBlock>(\.startTime)
+                        if let subBlocks = rootTimeBlock.subBlocks?.sorted(using: comparator).dropLast() {
+                            ForEach(subBlocks) { subBlock in
+                                let name = subBlock.name
+                                let duration = subBlock.duration
+                                    .formatted(.components(style: .narrow, fields: [.hour, .minute]))
+                                
+                                NavigationLink(value: subBlock) {
+                                    HStack {
+                                        Text(name)
+                                        Spacer()
+                                        Text(duration)
+                                    }
                                 }
+                            }
+                            
+                            if !subBlocks.isEmpty {
+                                HStack {
+                                    Spacer()
+                                    let text = if isEnded { "\(endTimeFormatted) 끝" }
+                                    else { "현재 \(endTimeFormatted)까지 진행중" }
+                                    
+                                    Text(text)
+                                        .bold()
+                                }
+                                .listRowSeparator(.hidden, edges: .bottom)
+                            } else {
+                                Self.subBlockUnavailable
+                                    .listRowSeparator(.hidden, edges: .bottom)
+                                    .frame(height: proxy.size.height * 0.85)
                             }
                         }
                     }
-                    HStack {
-                        Spacer()
-                        let text = if isEnded { "\(endTimeFormatted) 끝" }
-                                   else { "현재 \(endTimeFormatted)까지 진행중" }
-                        
-                        Text(text)
-                            .bold()
-                    }
-                    .listRowSeparator(.hidden, edges: .bottom)
                 }
                 .listStyle(.inset)
                 
                 GroupBox {
+                    if !isEnded {
+                        let comparator = KeyPathComparator<TimeBlock>(\.startTime)
+                        let subBlock = rootTimeBlock.subBlocks!.sorted(using: comparator).last!
+                        NavigationLink(value: subBlock) {
+                            HStack {
+                                VStack {
+                                    HStack {
+                                        Text("현재 진행중")
+                                            .bold()
+                                        Spacer()
+                                        
+                                    }
+                                    .padding(.bottom, 1)
+                                    
+                                    HStack {
+                                        Text(subBlock.name)
+                                        Spacer()
+                                        Text(subBlock.duration.formatted(.components(style: .narrow, fields: [.hour, .minute, .second])))
+                                    }
+                                }
+                                .foregroundStyle(Color(UIColor.label))
+                                
+                                Image(systemName: "chevron.right")
+                                    .font(.body)
+                                    .foregroundStyle(.gray)
+                                    .padding(.leading)
+                            }
+                        }
+                        
+                        Divider()
+                            .padding(.bottom, 5)
+                    }
+                    
                     HStack {
                         Text("합계")
                         Spacer()
@@ -80,6 +122,7 @@ struct TimeBlockView: View {
                     }
                     .font(.headline)
                 }
+                
             }
             .safeAreaPadding()
             .navigationTitle($timeBlockName)
@@ -184,6 +227,14 @@ extension TimeBlockView {
                     .buttonBorderShape(.capsule)
                 }
             }
+        }
+    }
+    
+    static var subBlockUnavailable: some View {
+        ContentUnavailableView {
+            Label("이전 기록 없음", systemImage: "tray.fill")
+        } description: {
+            Text("새 기록을 추가해주세요.")
         }
     }
 }
