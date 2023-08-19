@@ -62,11 +62,15 @@ struct TimeBlockView: View {
                             if !subBlocks.isEmpty {
                                 HStack {
                                     Spacer()
-                                    let text = if isEnded { "\(endTimeFormatted) 끝" }
-                                    else { "현재 \(endTimeFormatted)까지 진행중" }
+                                    if isEnded {
+                                        Text("\(endTimeFormatted) 끝")
+                                            .bold()
+                                    } else {
+                                        TimelineView(.everyMinute) { _ in
+                                            Text("\(endTimeFormatted) 현재까지 진행중")
+                                        }
+                                    }
                                     
-                                    Text(text)
-                                        .bold()
                                 }
                                 .listRowSeparator(.hidden, edges: .bottom)
                             } else {
@@ -97,7 +101,17 @@ struct TimeBlockView: View {
                                     HStack {
                                         Text(subBlock.name)
                                         Spacer()
-                                        Text(subBlock.duration.formatted(.components(style: .narrow, fields: [.hour, .minute, .second]).locale(locale)))
+                                        TimelineView(.periodic(from: subBlock.startTime, by: 1.0)) { _ in
+                                            let duration = subBlock.duration
+                                                .formatted(
+                                                    .components(
+                                                        style: .narrow,
+                                                        fields: [.hour, .minute, .second]
+                                                    )
+                                                    .locale(locale)
+                                                )
+                                            Text(duration)
+                                        }
                                     }
                                 }
                                 .foregroundStyle(Color(UIColor.label))
@@ -116,9 +130,11 @@ struct TimeBlockView: View {
                     HStack {
                         Text("합계")
                         Spacer()
-                        let duration = rootTimeBlock.duration
-                            .formatted(.components(style: .narrow, fields: [.hour, .minute]).locale(locale))
-                        Text(duration)
+                        TimelineView(.periodic(from: rootTimeBlock.startTime, by: 60.0)) { _ in
+                            let duration = rootTimeBlock.duration
+                                .formatted(.components(style: .narrow, fields: [.hour, .minute]).locale(locale))
+                            Text(duration)
+                        }
                     }
                     .font(.headline)
                 }
