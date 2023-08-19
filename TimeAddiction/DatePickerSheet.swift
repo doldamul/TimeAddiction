@@ -9,6 +9,7 @@ import Foundation
 import SwiftUI
 
 struct DatePickerSheet: View {
+    @Environment(\.locale) var locale
     @Environment(\.dismiss) var dismiss
 
     @State var previousDate: Date = Date(timeIntervalSinceReferenceDate: 0)
@@ -17,6 +18,7 @@ struct DatePickerSheet: View {
     var body: some View {
         NavigationStack {
             DatePicker("날짜 선택", selection: $selectedDate, displayedComponents: [.date])
+                .environment(\.locale, locale)
                 .datePickerStyle(.graphical)
                 .navigationTitle("날짜 선택")
                 .navigationBarTitleDisplayMode(.inline)
@@ -43,11 +45,12 @@ struct DatePickerSheet: View {
 }
 
 fileprivate struct DatePickerSheetPreview: View {
+    @Environment(\.locale) var locale
     @State var isDatePickerSheet: Bool = false
     @State var selectedDate: Date = Date.now
     
     var selectedDateString: String {
-        selectedDate.formatted(.dateTime.year().month().day())
+        selectedDate.formatted(.dateTime.year().month().day().locale(locale))
     }
     
     var body: some View {
@@ -68,4 +71,5 @@ fileprivate struct DatePickerSheetPreview: View {
 
 #Preview {
     DatePickerSheetPreview()
+        .environment(\.locale, Locale(identifier: "ko_KR"))
 }

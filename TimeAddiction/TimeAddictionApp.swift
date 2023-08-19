@@ -14,6 +14,7 @@ struct TimeAddictionApp: App {
         WindowGroup {
             ContentView()
                 .modelContainer(for: DayBlock.self)
+                .environment(\.locale, Locale.current)
         }
     }
 }

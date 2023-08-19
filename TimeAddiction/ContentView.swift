@@ -33,6 +33,7 @@ struct ContentView: View {
 
 // MARK: Main View
 fileprivate struct DayBlockView: View {
+    @Environment(\.locale) var locale
     @Environment(\.modelContext) var modelContext
     
     @Binding var selectedDate: Date
@@ -105,7 +106,7 @@ extension Date {
 // MARK: logic extension
 extension DayBlockView {
     var titleFormatted: String {
-        selectedDate.formatted(.dateTime.day().month())
+        selectedDate.formatted(.dateTime.day().month().locale(locale))
     }
     
     func checkAndAddDayBlock(date: Date) {
@@ -126,7 +127,7 @@ extension DayBlockView {
     func navigationItem(timeBlock: TimeBlock) -> some View {
         let name = timeBlock.name
         let duration = timeBlock.duration
-            .formatted(.components(style: .narrow, fields: [.hour, .minute]))
+            .formatted(.components(style: .narrow, fields: [.hour, .minute]).locale(locale))
         
         NavigationLink(value: timeBlock) {
             HStack {
@@ -249,6 +250,7 @@ extension DayBlockView {
 #Preview("Main") {
     ContentView()
         .modelContainer(PreviewSwiftData.container)
+        .environment(\.locale, Locale(identifier: "ko_KR"))
 }
 
 #Preview("Unavailable") {

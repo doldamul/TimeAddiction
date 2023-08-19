@@ -48,7 +48,7 @@ struct TimeBlockView: View {
                             ForEach(subBlocks) { subBlock in
                                 let name = subBlock.name
                                 let duration = subBlock.duration
-                                    .formatted(.components(style: .narrow, fields: [.hour, .minute]))
+                                    .formatted(.components(style: .narrow, fields: [.hour, .minute]).locale(locale))
                                 
                                 NavigationLink(value: subBlock) {
                                     HStack {
@@ -97,7 +97,7 @@ struct TimeBlockView: View {
                                     HStack {
                                         Text(subBlock.name)
                                         Spacer()
-                                        Text(subBlock.duration.formatted(.components(style: .narrow, fields: [.hour, .minute, .second])))
+                                        Text(subBlock.duration.formatted(.components(style: .narrow, fields: [.hour, .minute, .second]).locale(locale)))
                                     }
                                 }
                                 .foregroundStyle(Color(UIColor.label))
@@ -117,7 +117,7 @@ struct TimeBlockView: View {
                         Text("합계")
                         Spacer()
                         let duration = rootTimeBlock.duration
-                            .formatted(.components(style: .narrow, fields: [.hour, .minute]))
+                            .formatted(.components(style: .narrow, fields: [.hour, .minute]).locale(locale))
                         Text(duration)
                     }
                     .font(.headline)
@@ -255,5 +255,5 @@ fileprivate struct TimeBlockPreview: View {
 #Preview {
     TimeBlockPreview()
         .modelContainer(PreviewSwiftData.container)
-        .environment(\.locale, .init(identifier: "ko.kr"))
+        .environment(\.locale, .init(identifier: "ko_KR"))
 }
