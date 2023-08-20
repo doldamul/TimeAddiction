@@ -35,7 +35,7 @@ actor PreviewSwiftData {
 
 extension TimeBlock {
     static var preview: TimeBlock {
-        TimeBlock("TimeBlock Preview Title", startTime: Date.now)
+        TimeBlock("TimeBlock Preview", startTime: Date.now)
     }
 }
 

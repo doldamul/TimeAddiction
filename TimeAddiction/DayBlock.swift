@@ -10,7 +10,7 @@ import SwiftData
 
 @Model
 final class DayBlock {
-    @Attribute(.unique) var date: Date
+    @Attribute(.unique) let date: Date
     var memo: String
     var goalMinute: Int?
     

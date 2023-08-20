@@ -25,8 +25,8 @@ struct ContentView: View {
             .onReceive(NotificationCenter.default.publisher(for: UIApplication.significantTimeChangeNotification)) { _ in
                 if selectedDate != Date.today { selectedDate = Date.today }
             }
-            .onChange(of: selectedDate) { (_, newDate) in
-                fetchDescriptor.predicate = #Predicate<DayBlock> { newDate == $0.date }
+            .onChange(of: selectedDate) {
+                fetchDescriptor.predicate = #Predicate<DayBlock> { selectedDate == $0.date }
             }
     }
 }
@@ -35,36 +35,36 @@ struct ContentView: View {
 fileprivate struct DayBlockView: View {
     @Environment(\.locale) var locale
     @Environment(\.modelContext) var modelContext
+    let comparator = KeyPathComparator<TimeBlock>(\.startTime)
     
     @Binding var selectedDate: Date
-    @Query var dayBlocks: [DayBlock]
+    @Query var dayBlockContainer: [DayBlock]
+    var dayBlock: DayBlock? { dayBlockContainer.first }
+    @State var timeBlocks: [TimeBlock] = []
+    
     @State var selectedTimeBlock: TimeBlock?
     @State var isDatePickerSheet: Bool = false
     @State var isTimeBlockAddingSheet: Bool = false
     @State var timeBlockSheetTempTitle: String = ""
     
     init(_ fetchDescriptor: FetchDescriptor<DayBlock>, selectedDate: Binding<Date>) {
-        self._dayBlocks = Query(fetchDescriptor)
+        self._dayBlockContainer = Query(fetchDescriptor)
         self._selectedDate = selectedDate
     }
     
     var body: some View {
         NavigationSplitView {
             List(selection: $selectedTimeBlock) {
-                if let dayBlock = dayBlocks.first {
-                    let comparator = KeyPathComparator<TimeBlock>(\.startTime)
-                    let timeBlocks = dayBlock.timeBlocks.sorted(using: comparator)
-                    ForEach(timeBlocks) {
-                        navigationItem(timeBlock: $0)
-                    }
+                ForEach(timeBlocks) {
+                    navigationItem(timeBlock: $0)
                 }
             }
             .overlay {
-                if let dayBlock = dayBlocks.first {
+                if let dayBlock {
                     if dayBlock.timeBlocks.isEmpty {
                         Self.timeBlockUnavailable
                     }
-                } else {
+                } else { // not today, empty timeblock
                     Self.dayBlockUnavailable
                 }
             }
@@ -82,24 +82,18 @@ fileprivate struct DayBlockView: View {
                 Self.detailUnavailable
             }
         }
-        .onAppear {
+        .onChange(of: selectedDate, initial: true) {
             checkAndAddDayBlock(date: selectedDate)
         }
-        .onChange(of: selectedDate) { (_, newDate) in
-            checkAndAddDayBlock(date: newDate)
+        .onChange(of: dayBlock, initial: true) {
+            refreshTimeBlocks()
         }
         .sheet(isPresented: $isDatePickerSheet) {
             DatePickerSheet(selectedDate: $selectedDate)
         }
         .sheet(isPresented: $isTimeBlockAddingSheet) {
-            TimeBlockAddingSheet(title: $timeBlockSheetTempTitle, dayBlock: dayBlocks.first!)
+            TimeBlockAddingSheet(title: $timeBlockSheetTempTitle, dayBlock: dayBlock!, timeBlocks: $timeBlocks)
         }
-    }
-}
-
-extension Date {
-    static var today: Date {
-        Calendar.current.startOfDay(for: Date.now)
     }
 }
 
@@ -110,14 +104,32 @@ extension DayBlockView {
     }
     
     func checkAndAddDayBlock(date: Date) {
-        if dayBlocks.isEmpty && date == Date.today {
+        if dayBlock == nil && date == Date.today {
             let newBlock = DayBlock(date)
             modelContext.insert(newBlock)
         }
     }
     
-    func deleteTimeBlock(timeBlock: TimeBlock) {
+    func refreshTimeBlocks() {
+        if let dayBlock {
+            self.timeBlocks = dayBlock.timeBlocks.sorted(using: comparator)
+        } else {
+            self.timeBlocks = []
+        }
+    }
+    
+    func endTimeBlock(_ timeBlock: TimeBlock) {
+        let lastSubBlock = timeBlock.subBlocks.sorted(using: comparator).last!
+        let now = Date.now
+        lastSubBlock.endTime = now
+        timeBlock.endTime = now
+        refreshTimeBlocks()
+    }
+    
+    func deleteTimeBlock(_ timeBlock: TimeBlock) {
         modelContext.delete(timeBlock)
+        try? modelContext.save()
+        refreshTimeBlocks()
     }
 }
 
@@ -126,8 +138,7 @@ extension DayBlockView {
     @ViewBuilder
     func navigationItem(timeBlock: TimeBlock) -> some View {
         let name = timeBlock.name
-        let duration = timeBlock.duration
-            .formatted(.components(style: .narrow, fields: [.hour, .minute]).locale(locale))
+        let duration = timeBlock.duration.durationFormatted(locale)
         
         NavigationLink(value: timeBlock) {
             HStack {
@@ -138,7 +149,7 @@ extension DayBlockView {
         }
         .contextMenu {
             Button(role: .destructive) {
-                deleteTimeBlock(timeBlock: timeBlock)
+                deleteTimeBlock(timeBlock)
             } label: {
                 Label("삭제", systemImage: "trash")
             }
@@ -190,15 +201,10 @@ extension DayBlockView {
     
     var bottomBarItem: ToolbarItem<(), some View> {
         .init(placement: .status) {
-            let comparator = KeyPathComparator<TimeBlock>(\.startTime)
-            let timeBlocks = dayBlocks.first?.timeBlocks.sorted(using: comparator)
-            if let timeBlock = timeBlocks?.last, timeBlock.endTime == nil {
+            if let focusedTimeBlock = timeBlocks.last, 
+                focusedTimeBlock.endTime == nil {
                 Button {
-                    let orderedSubBlocks = timeBlock.subBlocks!.sorted(using: comparator)
-                    
-                    let lastSubBlock = orderedSubBlocks.last!
-                    lastSubBlock.endTime = Date.now
-                    timeBlock.endTime = lastSubBlock.endTime
+                    endTimeBlock(focusedTimeBlock)
                 } label: {
                     Label("타임블록 종료", systemImage: "timer")
                         .labelStyle(.titleAndIcon)

@@ -16,17 +16,17 @@ final class TimeBlock {
     var endTime: Date?
     
     @Relationship(deleteRule: .cascade, inverse: \TimeBlock.parent)
-    var subBlocks: [TimeBlock]?
+    var subBlocks: [TimeBlock]
     var parent: TimeBlock?
     
     var parentDay: DayBlock?
     
-    init(_ name: String, startTime: Date, subSpace: Bool = true) {
+    init(_ name: String, startTime: Date) {
         self.name = name
         self.memo = ""
         self.startTime = startTime
         self.endTime = nil
-        self.subBlocks = subSpace ? [] : nil
+        self.subBlocks = []
         self.parent = nil
     }
 }
@@ -35,5 +35,11 @@ extension TimeBlock {
     @Transient
     var duration: Range<Date> {
         startTime ..< (endTime ?? Date.now)
+    }
+}
+
+extension Date {
+    static var today: Date {
+        Calendar.current.startOfDay(for: Date.now)
     }
 }

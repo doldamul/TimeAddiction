@@ -44,6 +44,7 @@ struct DatePickerSheet: View {
     }
 }
 
+// MARK: Preview
 fileprivate struct DatePickerSheetPreview: View {
     @Environment(\.locale) var locale
     @State var isDatePickerSheet: Bool = false
@@ -69,7 +70,7 @@ fileprivate struct DatePickerSheetPreview: View {
     }
 }
 
-#Preview {
+#Preview("DatePicker Sheet") {
     DatePickerSheetPreview()
         .environment(\.locale, Locale(identifier: "ko_KR"))
 }

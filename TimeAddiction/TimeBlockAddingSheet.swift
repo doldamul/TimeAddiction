@@ -13,7 +13,9 @@ struct TimeBlockAddingSheet: View {
     @Environment(\.dismiss) var dismiss
     @FocusState var fieldFocus
     @Binding var title: String
+    
     var dayBlock: DayBlock
+    @Binding var timeBlocks: [TimeBlock]
     
     var body: some View {
         NavigationStack {
@@ -41,8 +43,8 @@ struct TimeBlockAddingSheet: View {
                 title = ""
             }
         }
-        .onChange(of: fieldFocus) { (_, newValue) in
-            if newValue == false {
+        .onChange(of: fieldFocus) {
+            if !fieldFocus {
                 dismiss()
             }
         }
@@ -62,19 +64,24 @@ struct TimeBlockAddingSheet: View {
         modelContext.insert(newSubBlock)
         newBlock.name = name
         dayBlock.timeBlocks.append(newBlock)
-        newBlock.subBlocks!.append(newSubBlock)
+        newBlock.subBlocks.append(newSubBlock)
         newSubBlock.startTime = newBlock.startTime
         newSubBlock.name = "1번째 판"
+        timeBlocks.append(newBlock)
         title = ""
+        
         dismiss()
     }
 }
 
+// MARK: Preview
 struct TimeBlockAddingSheetPreview: View {
     @Environment(\.modelContext) var modelContext
     
     @State var isTimeBlockAddingSheet = false
     @Query var dayBlocks: [DayBlock]
+    @State var timeBlocks: [TimeBlock] = []
+    
     @State var timeBlockSheetTempTitle = ""
     
     var body: some View {
@@ -97,12 +104,12 @@ struct TimeBlockAddingSheetPreview: View {
             }
         }
         .sheet(isPresented: $isTimeBlockAddingSheet) {
-            TimeBlockAddingSheet(title: $timeBlockSheetTempTitle, dayBlock: dayBlocks.first!)
+            TimeBlockAddingSheet(title: $timeBlockSheetTempTitle, dayBlock: dayBlocks.first!, timeBlocks: $timeBlocks)
         }
     }
 }
 
-#Preview {
+#Preview("TimeBlock Adding Sheet") {
     TimeBlockAddingSheetPreview()
         .modelContainer(PreviewSwiftData.container)
 }
