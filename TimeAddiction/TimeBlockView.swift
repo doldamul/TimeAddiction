@@ -62,7 +62,7 @@ struct TimeBlockView: View {
             .navigationTitle($timeBlockName)
             .navigationBarTitleDisplayMode(.inline)
             .navigationDestination(for: TimeBlock.self) { timeBlock in
-                Text(timeBlock.name)
+                SubBlockDetailView(subBlock: timeBlock)
             }
             .toolbar {
                 bottomButtonSet

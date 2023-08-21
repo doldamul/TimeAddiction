@@ -11,6 +11,7 @@
 		2A4D51AD2A8F22B3005BDA3A /* TimeBlockView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A4D51AC2A8F22B3005BDA3A /* TimeBlockView.swift */; };
 		2AA49D892A8E087800700475 /* TimeBlockAddingSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2AA49D882A8E087800700475 /* TimeBlockAddingSheet.swift */; };
 		2AB58FF72A92B64B00B85638 /* DateFormatingTool.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2AB58FF62A92B64B00B85638 /* DateFormatingTool.swift */; };
+		2AB58FF92A92E0C900B85638 /* SubBlockDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2AB58FF82A92E0C900B85638 /* SubBlockDetailView.swift */; };
 		2AF56BD22A8C807F00CAC481 /* TimeAddictionApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2AF56BD12A8C807F00CAC481 /* TimeAddictionApp.swift */; };
 		2AF56BD42A8C807F00CAC481 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2AF56BD32A8C807F00CAC481 /* ContentView.swift */; };
 		2AF56BD62A8C808100CAC481 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 2AF56BD52A8C808100CAC481 /* Assets.xcassets */; };
@@ -25,6 +26,7 @@
 		2A4D51AC2A8F22B3005BDA3A /* TimeBlockView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimeBlockView.swift; sourceTree = "<group>"; };
 		2AA49D882A8E087800700475 /* TimeBlockAddingSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimeBlockAddingSheet.swift; sourceTree = "<group>"; };
 		2AB58FF62A92B64B00B85638 /* DateFormatingTool.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DateFormatingTool.swift; sourceTree = "<group>"; };
+		2AB58FF82A92E0C900B85638 /* SubBlockDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubBlockDetailView.swift; sourceTree = "<group>"; };
 		2AF56BCE2A8C807F00CAC481 /* TimeAddiction.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = TimeAddiction.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		2AF56BD12A8C807F00CAC481 /* TimeAddictionApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimeAddictionApp.swift; sourceTree = "<group>"; };
 		2AF56BD32A8C807F00CAC481 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -68,6 +70,7 @@
 				2AF56BD12A8C807F00CAC481 /* TimeAddictionApp.swift */,
 				2AF56BD32A8C807F00CAC481 /* ContentView.swift */,
 				2A4D51AC2A8F22B3005BDA3A /* TimeBlockView.swift */,
+				2AB58FF82A92E0C900B85638 /* SubBlockDetailView.swift */,
 				2AF56BD52A8C808100CAC481 /* Assets.xcassets */,
 				2AF56BD72A8C808100CAC481 /* Preview Content */,
 				2AF56BDF2A8C813400CAC481 /* TimeBlock.swift */,
@@ -162,6 +165,7 @@
 				2A152AC62A8D9BE6009B1D1D /* DatePickerSheet.swift in Sources */,
 				2AF56BD42A8C807F00CAC481 /* ContentView.swift in Sources */,
 				2AB58FF72A92B64B00B85638 /* DateFormatingTool.swift in Sources */,
+				2AB58FF92A92E0C900B85638 /* SubBlockDetailView.swift in Sources */,
 				2A4D51AD2A8F22B3005BDA3A /* TimeBlockView.swift in Sources */,
 				2AF56BE22A8C849300CAC481 /* DayBlock.swift in Sources */,
 				2AA49D892A8E087800700475 /* TimeBlockAddingSheet.swift in Sources */,
