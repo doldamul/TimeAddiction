@@ -11,23 +11,19 @@ import SwiftData
 @Model
 final class TimeBlock {
     var name: String
-    var memo: String
+    var memo: String = ""
     var startTime: Date
     var endTime: Date?
     
     @Relationship(deleteRule: .cascade, inverse: \TimeBlock.parent)
-    var subBlocks: [TimeBlock]
+    var subBlocks: [TimeBlock] = []
     var parent: TimeBlock?
     
     var parentDay: DayBlock?
     
     init(_ name: String, startTime: Date) {
         self.name = name
-        self.memo = ""
         self.startTime = startTime
-        self.endTime = nil
-        self.subBlocks = []
-        self.parent = nil
     }
 }
 
@@ -35,6 +31,13 @@ extension TimeBlock {
     @Transient
     var duration: Range<Date> {
         startTime ..< (endTime ?? Date.now)
+    }
+}
+
+extension TimeBlock {
+    /// cannot call TimeBlock.init at swiftui view file; seems like a bug - workaround
+    static func new(_ name: String, _ startTime: Date) -> TimeBlock {
+        self.init(name, startTime: startTime)
     }
 }
 

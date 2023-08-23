@@ -12,7 +12,7 @@ actor PreviewSwiftData {
     @MainActor
     static var container: ModelContainer = {
         let schema = Schema([DayBlock.self])
-        let configuration = ModelConfiguration(inMemory: true)
+        let configuration = ModelConfiguration(isStoredInMemoryOnly: true)
         let container = try! ModelContainer(for: schema, configurations: [configuration])
         
         var dayBlock = DayBlock.preview

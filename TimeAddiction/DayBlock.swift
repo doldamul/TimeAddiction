@@ -11,16 +11,13 @@ import SwiftData
 @Model
 final class DayBlock {
     @Attribute(.unique) let date: Date
-    var memo: String
+    var memo: String = ""
     var goalMinute: Int?
     
     @Relationship(deleteRule: .cascade, inverse: \TimeBlock.parentDay)
-    var timeBlocks: [TimeBlock]
+    var timeBlocks: [TimeBlock] = []
     
     init(_ date: Date) {
         self.date = date
-        self.memo = ""
-        self.goalMinute = nil
-        self.timeBlocks = []
     }
 }

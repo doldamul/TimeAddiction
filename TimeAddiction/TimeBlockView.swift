@@ -99,25 +99,26 @@ extension TimeBlockView {
     }
     
     func lapSubBlock(_ timeBlock: TimeBlock) {
-       let oldSubBlock = subBlocks.last!
-        oldSubBlock.endTime = Date.now
-        
-        let newSubBlock = TimeBlock.preview
-        modelContext.insert(newSubBlock)
-        
+        let now = Date.now
+        let oldSubBlock = subBlocks.last!
+        oldSubBlock.endTime = now
+         
         // deciding subBlock name
         let (_, count, description) = subBlocks.compactMap {
             try! regex.firstMatch(in: $0.name)
         }.last?.output ?? ("", 0, "판")
         
-        timeBlock.subBlocks.append(newSubBlock)
-        newSubBlock.name = String(count+1) + ordinalSuffix
+        var name = String(count+1) + "번째"
         if let description {
-            newSubBlock.name.append(" " + description)
+            name.append(" " + description)
         }
+        
+        let newSubBlock = TimeBlock.new(name, now)
+        modelContext.insert(newSubBlock)
+        timeBlock.subBlocks.append(newSubBlock)
+        try? modelContext.save()
     }
     
-    private var ordinalSuffix: String { "번째" }
     private var regex : Regex<(Substring, Int, Substring?)> {
         let regex = Regex {
             Capture {
@@ -125,7 +126,7 @@ extension TimeBlockView {
             } transform: {
                 Int($0)!
             }
-            ordinalSuffix
+            "번째"
             ZeroOrMore { " " }
             Optionally {
                 Capture {
