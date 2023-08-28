@@ -9,74 +9,35 @@ import SwiftUI
 import SwiftData
 import RegexBuilder
 
-// MARK: TimeBlock Detail View
+// MARK: TimeBlock RootView & SubView Navigation Container
 struct TimeBlockView: View {
     @Environment(\.locale) var locale
     @Environment(\.modelContext) var modelContext
     let comparator = KeyPathComparator<TimeBlock>(\.startTime)
     
-    @Bindable var rootTimeBlock: TimeBlock
+    @Binding var rootTimeBlock: TimeBlock?
     @State var subBlocks: [TimeBlock] = []
     
-// TODO: timeBlockName: [TimeBlock: String] = [:] with onChange(of: timeBlockPath)
-    @State var timeBlockName: String = ""
-    @State var subBlockPath: [TimeBlock] = []
-    
     var body: some View {
-        NavigationStack(path: $subBlockPath) {
-            VStack {
-                GeometryReader { proxy in
-                    List {
-                        listHeader
-                            .listRowSeparator(.hidden, edges: .top)
-                        
-                        let subBlocks = subBlocks.dropLast()
-                        ForEach(subBlocks) {
-                            pastSubBlockItem($0)
-                        }
-                        
-                        if !subBlocks.isEmpty {
-                            listFooter
-                                .listRowSeparator(.hidden, edges: .bottom)
-                        } else {
-                            Self.subBlockUnavailable
-                                .listRowSeparator(.hidden, edges: .bottom)
-                                .frame(height: proxy.size.height * 0.85)
-                        }
-                    }
-                    .listStyle(.inset)
+        NavigationStack {
+            Group {
+                if let rootTimeBlock {
+                    RootBlockDetailView(rootTimeBlock: rootTimeBlock, subBlocks: $subBlocks)
+                } else {
+                    Self.rootBlockUnavailable
                 }
-                
-                GroupBox {
-                    // subBlock.last! is failed at before onAppear called
-                    if !isEnded, let subBlock = subBlocks.last {
-                        currentSubBlockItem(subBlock)
-                        Divider()
-                            .padding(.bottom, 5)
-                    }
-                    
-                    timeSummary
-                }
-                .safeAreaPadding()
             }
-            .navigationTitle($timeBlockName)
+            .navigationTitle(Binding($rootTimeBlock)?.name ?? Binding.constant(""))
             .navigationBarTitleDisplayMode(.inline)
             .navigationDestination(for: TimeBlock.self) { timeBlock in
                 SubBlockDetailView(subBlock: timeBlock)
+                    .toolbar(.visible, for: .bottomBar)
             }
             .toolbar {
+                title
+                titleMenu
                 bottomButtonSet
             }
-        }
-        .onAppear {
-            timeBlockName = rootTimeBlock.name
-        }
-        .onChange(of: timeBlockName) {
-            // TODO: save old timeBlock.name temporarily while typing/searching name
-            rootTimeBlock.name = timeBlockName
-        }
-        .onChange(of: rootTimeBlock.subBlocks, initial: true) {
-            refreshSubBlocks()
         }
     }
 }
@@ -84,21 +45,17 @@ struct TimeBlockView: View {
 // MARK: logic extension
 extension TimeBlockView {
     private var isEnded: Bool {
-        rootTimeBlock.endTime != nil
-    }
-    
-    func refreshSubBlocks() {
-        self.subBlocks = rootTimeBlock.subBlocks.sorted(using: comparator)
+        rootTimeBlock?.endTime != nil
     }
     
     func endTimeBlock() {
         let lastSubBlock = subBlocks.last!
         let now = Date.now
         lastSubBlock.endTime = now
-        rootTimeBlock.endTime = now
+        rootTimeBlock!.endTime = now
     }
     
-    func lapSubBlock(_ timeBlock: TimeBlock) {
+    func lapSubBlock() {
         let now = Date.now
         let oldSubBlock = subBlocks.last!
         oldSubBlock.endTime = now
@@ -115,7 +72,7 @@ extension TimeBlockView {
         
         let newSubBlock = TimeBlock.new(name, now)
         modelContext.insert(newSubBlock)
-        timeBlock.subBlocks.append(newSubBlock)
+        rootTimeBlock!.subBlocks.append(newSubBlock)
         try? modelContext.save()
     }
     
@@ -140,122 +97,57 @@ extension TimeBlockView {
 
 // MARK: View extension
 extension TimeBlockView {
-    @ViewBuilder
-    func currentSubBlockItem(_ subBlock: TimeBlock) -> some View {
-        NavigationLink(value: subBlock) {
-            HStack {
-                VStack {
-                    HStack {
-                        Text("현재 진행중")
-                            .bold()
-                        Spacer()
-                    }
-                    .padding(.bottom, 1)
-                    
-                    HStack {
-                        Text(subBlock.name)
-                        Spacer()
-                        TimelineView(.periodic(from: subBlock.startTime, by: 1.0)) { _ in
-                            let duration = subBlock.duration.durationFormatted(locale, containSecond: true)
-                            Text(duration)
-                        }
-                    }
-                }
-                .foregroundStyle(Color(UIColor.label))
-                
-                Image(systemName: "chevron.right")
-                    .font(.body)
-                    .foregroundStyle(.gray)
-                    .padding(.leading)
-            }
+    var title: ToolbarItem<(), some View> {
+        .init(placement: .principal) {
+            let hasName = rootTimeBlock != nil
+            Text(rootTimeBlock?.name ?? "타임블록")
+                .bold(hasName)
+                .opacity(hasName ? 1 : 0.4)
         }
     }
-    
-    @ViewBuilder
-    func pastSubBlockItem(_ subBlock: TimeBlock) -> some View {
-        let name = subBlock.name
-        let duration = subBlock.duration.durationFormatted(locale)
-        
-        NavigationLink(value: subBlock) {
-            HStack {
-                Text(name)
-                Spacer()
-                Text(duration)
+
+    var titleMenu: ToolbarTitleMenu<some View> {
+        .init {
+            let hasName = rootTimeBlock?.name.isEmpty == false
+            if hasName {
+                RenameButton()
+            } else {
+                Text("타임블록 없음")
             }
         }
     }
 
-    @ViewBuilder
-    var listHeader: some View {
-        let startTime = rootTimeBlock.startTime.timeFormatted(locale)
-        HStack {
-            Text("")
-            Spacer()
-            Text("\(startTime) 시작")
-                .bold()
-        }
-    }
-    
-    @ViewBuilder
-    var listFooter: some View {
-        HStack {
-            Spacer()
-            if isEnded {
-                let endTime = rootTimeBlock.endTime!.timeFormatted(locale)
-                Text("\(endTime) 끝")
-                    .bold()
-            } else {
-                TimelineView(.everyMinute) { _ in
-                    let now = Date.now.timeFormatted(locale)
-                    Text("\(now) 현재까지 진행중")
-                }
-            }
-        }
-    }
-    
-    @ViewBuilder
-    var timeSummary: some View {
-        HStack {
-            Text("합계")
-            Spacer()
-            TimelineView(.periodic(from: rootTimeBlock.startTime, by: 60.0)) { _ in
-                let duration = rootTimeBlock.duration.durationFormatted(locale)
-                Text(duration)
-            }
-        }
-        .font(.headline)
-    }
-    
     var bottomButtonSet: ToolbarItem<(), some View> {
         ToolbarItem(placement: .bottomBar) {
-            if isEnded {
-                Button { /* empty */ } label: {
-                    Label("종료됨", systemImage: "checkmark.seal.fill")
-                        .labelStyle(.titleAndIcon)
-                }
-                .buttonStyle(.bordered)
-                .buttonBorderShape(.capsule)
-                .disabled(true)
-            } else {
-                HStack {
-                    Button {
-                        endTimeBlock()
-                    } label: {
-                        Label("끝내기", systemImage: "stopwatch")
-                            .labelStyle(.titleAndIcon)
+            HStack {
+                if rootTimeBlock != nil {
+                    if isEnded {
+                        Button(action: {}) {
+                            Label("종료됨", systemImage: "checkmark.seal.fill")
+                                .labelStyle(.titleAndIcon)
+                        }
+                        .buttonStyle(.bordered)
+                        .buttonBorderShape(.capsule)
+                        .disabled(true)
+                    } else {
+                        Button {
+                            endTimeBlock()
+                        } label: {
+                            Label("끝내기", systemImage: "stopwatch")
+                                .labelStyle(.titleAndIcon)
+                        }
+                        .buttonStyle(.bordered)
+                        .buttonBorderShape(.capsule)
+                        
+                        Button {
+                            lapSubBlock()
+                        } label: {
+                            Label("기록 추가", systemImage: "plus")
+                                .labelStyle(.titleAndIcon)
+                        }
+                        .buttonStyle(.borderedProminent)
+                        .buttonBorderShape(.capsule)
                     }
-                    .buttonStyle(.bordered)
-                    .buttonBorderShape(.capsule)
-                    
-                    Button {
-                        let timeBlock = subBlockPath.last ?? rootTimeBlock
-                        lapSubBlock(timeBlock)
-                    } label: {
-                        Label("기록 추가", systemImage: "plus")
-                            .labelStyle(.titleAndIcon)
-                    }
-                    .buttonStyle(.borderedProminent)
-                    .buttonBorderShape(.capsule)
                 }
             }
         }
@@ -268,18 +160,27 @@ extension TimeBlockView {
             Text("새 기록을 추가해주세요.")
         }
     }
+    
+    static var rootBlockUnavailable: some View {
+        ContentUnavailableView {
+            Label("선택되지 않음", systemImage: "filemenu.and.cursorarrow")
+        } description: {
+            Text("사이드바에서 타임블록을 선택해 주세요.")
+        }
+        .allowsHitTesting(false)
+    }
 }
 
 // MARK: Preview
 fileprivate struct TimeBlockPreview: View {
     @Query(filter: #Predicate<TimeBlock> { $0.parentDay != nil }) 
     var timeBlocks: [TimeBlock]
+    @State var timeBlock: TimeBlock?
     
     var body: some View {
-        if let timeBlock = timeBlocks.first {
-            TimeBlockView(rootTimeBlock: timeBlock)
-        } else {
-            Text("empty")
+        TimeBlockView(rootTimeBlock: $timeBlock)
+        .onAppear {
+            timeBlock = timeBlocks.first
         }
     }
 }

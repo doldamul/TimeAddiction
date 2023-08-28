@@ -11,18 +11,15 @@ import SwiftData
 
 struct SubBlockDetailView: View {
     @Environment(\.locale) var locale
-    
-    let subBlock: TimeBlock
-    @State var title: String = ""
-    @State var memo: String = ""
+    @Bindable var subBlock: TimeBlock
     
     var body: some View {
         ZStack {
-            TextEditor(text: $memo)
+            TextEditor(text: $subBlock.memo)
                 .overlay(alignment: .topLeading) {
                     Text("메모")
                         .foregroundStyle(.gray)
-                        .opacity(memo == "" ? 1 : 0)
+                        .opacity(subBlock.memo == "" ? 1 : 0)
                         .offset(x: 5, y: 8)
                 }
             VStack {
@@ -65,17 +62,7 @@ struct SubBlockDetailView: View {
             }
         }
         .safeAreaPadding()
-        .onAppear {
-            self.memo = subBlock.memo
-            self.title = subBlock.name
-        }
-        .onChange(of: memo) {
-            subBlock.memo = self.memo
-        }
-        .onChange(of: title) {
-            subBlock.name = self.title
-        }
-        .navigationTitle($title)
+        .navigationTitle($subBlock.name)
         .navigationBarTitleDisplayMode(.inline)
     }
 }

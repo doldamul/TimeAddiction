@@ -68,20 +68,17 @@ fileprivate struct DayBlockView: View {
                     Self.dayBlockUnavailable
                 }
             }
-            .navigationTitle(titleFormatted)
             .navigationBarTitleDisplayMode(.inline)
+            .navigationTitle(titleFormatted)
             .toolbar {
                 title
                 titleMenu
                 bottomBarItem
             }
         } detail: {
-            if let selectedTimeBlock {
-                TimeBlockView(rootTimeBlock: selectedTimeBlock)
-            } else {
-                Self.detailUnavailable
-            }
+            TimeBlockView(rootTimeBlock: $selectedTimeBlock)
         }
+        .navigationSplitViewStyle(.balanced)
         .onChange(of: selectedDate, initial: true) {
             checkAndAddDayBlock(date: selectedDate)
         }
@@ -158,19 +155,17 @@ extension DayBlockView {
     
     var title: ToolbarItem<(), some View> {
         .init(placement: .principal) {
-            if selectedDate == Date.today {
-                Label {
-                    Text(titleFormatted)
-                } icon: {
+            Label {
+                Text(titleFormatted)
+            } icon: {
+                if selectedDate == Date.today {
                     Image(systemName: "star.fill")
                         .symbolRenderingMode(.palette)
                         .foregroundStyle(.yellow)
                         .font(.footnote)
                 }
-                .labelStyle(.titleAndIcon)
-            } else {
-                Text(titleFormatted)
             }
+            .labelStyle(.titleAndIcon)
         }
     }
     

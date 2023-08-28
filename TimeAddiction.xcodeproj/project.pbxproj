@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		2A152AC62A8D9BE6009B1D1D /* DatePickerSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A152AC52A8D9BE6009B1D1D /* DatePickerSheet.swift */; };
 		2A4D51AD2A8F22B3005BDA3A /* TimeBlockView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A4D51AC2A8F22B3005BDA3A /* TimeBlockView.swift */; };
+		2A8CC69B2A974A4F006C85D9 /* RootBlockDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A8CC69A2A974A4E006C85D9 /* RootBlockDetailView.swift */; };
 		2AA49D892A8E087800700475 /* TimeBlockAddingSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2AA49D882A8E087800700475 /* TimeBlockAddingSheet.swift */; };
 		2AB58FF72A92B64B00B85638 /* DateFormatingTool.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2AB58FF62A92B64B00B85638 /* DateFormatingTool.swift */; };
 		2AB58FF92A92E0C900B85638 /* SubBlockDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2AB58FF82A92E0C900B85638 /* SubBlockDetailView.swift */; };
@@ -24,6 +25,7 @@
 /* Begin PBXFileReference section */
 		2A152AC52A8D9BE6009B1D1D /* DatePickerSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DatePickerSheet.swift; sourceTree = "<group>"; };
 		2A4D51AC2A8F22B3005BDA3A /* TimeBlockView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimeBlockView.swift; sourceTree = "<group>"; };
+		2A8CC69A2A974A4E006C85D9 /* RootBlockDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RootBlockDetailView.swift; sourceTree = "<group>"; };
 		2AA49D882A8E087800700475 /* TimeBlockAddingSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimeBlockAddingSheet.swift; sourceTree = "<group>"; };
 		2AB58FF62A92B64B00B85638 /* DateFormatingTool.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DateFormatingTool.swift; sourceTree = "<group>"; };
 		2AB58FF82A92E0C900B85638 /* SubBlockDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubBlockDetailView.swift; sourceTree = "<group>"; };
@@ -70,6 +72,7 @@
 				2AF56BD12A8C807F00CAC481 /* TimeAddictionApp.swift */,
 				2AF56BD32A8C807F00CAC481 /* ContentView.swift */,
 				2A4D51AC2A8F22B3005BDA3A /* TimeBlockView.swift */,
+				2A8CC69A2A974A4E006C85D9 /* RootBlockDetailView.swift */,
 				2AB58FF82A92E0C900B85638 /* SubBlockDetailView.swift */,
 				2AF56BD52A8C808100CAC481 /* Assets.xcassets */,
 				2AF56BD72A8C808100CAC481 /* Preview Content */,
@@ -162,6 +165,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				2AF56BE02A8C813400CAC481 /* TimeBlock.swift in Sources */,
+				2A8CC69B2A974A4F006C85D9 /* RootBlockDetailView.swift in Sources */,
 				2A152AC62A8D9BE6009B1D1D /* DatePickerSheet.swift in Sources */,
 				2AF56BD42A8C807F00CAC481 /* ContentView.swift in Sources */,
 				2AB58FF72A92B64B00B85638 /* DateFormatingTool.swift in Sources */,
