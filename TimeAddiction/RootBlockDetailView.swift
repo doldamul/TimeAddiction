@@ -23,8 +23,7 @@ struct RootBlockDetailView: View {
                     listHeader
                         .listRowSeparator(.hidden, edges: .top)
                     
-                    // TODO: do not droplast when isEnded
-                    let subBlocks = subBlocks.dropLast()
+                    let subBlocks = isEnded ? subBlocks : subBlocks.dropLast()
                     ForEach(subBlocks) {
                         pastSubBlockItem($0)
                     }
