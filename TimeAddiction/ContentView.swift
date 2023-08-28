@@ -141,7 +141,22 @@ extension DayBlockView {
             HStack {
                 Text(name)
                 Spacer()
-                Text(duration)
+                if timeBlock.endTime == nil {
+                    Text("진행중")
+                        .font(.footnote)
+                        .padding(3)
+                        .background {
+                            Capsule(style: .continuous)
+                                .stroke(.green, lineWidth: 1)
+                        }
+                    TimelineView(.periodic(from: timeBlock.startTime, by: 60.0)) { _ in
+                        let duration = timeBlock.duration.durationFormatted(locale)
+                        Text(duration)
+                    }
+                } else {
+                    let duration = timeBlock.duration.durationFormatted(locale)
+                    Text(duration)
+                }
             }
         }
         .contextMenu {

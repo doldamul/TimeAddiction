@@ -99,10 +99,24 @@ extension TimeBlockView {
 extension TimeBlockView {
     var title: ToolbarItem<(), some View> {
         .init(placement: .principal) {
-            let hasName = rootTimeBlock != nil
-            Text(rootTimeBlock?.name ?? "타임블록")
-                .bold(hasName)
-                .opacity(hasName ? 1 : 0.4)
+            Label {
+                let hasName = rootTimeBlock != nil
+                Text(rootTimeBlock?.name ?? "타임블록")
+                    .bold(hasName)
+                    .opacity(hasName ? 1 : 0.4)
+            } icon: {
+                let isOngoing = !isEnded && rootTimeBlock != nil
+                Text(isOngoing ? "진행중" : "")
+                    .font(.footnote)
+                    .padding(3)
+                    .background {
+                        if isOngoing {
+                            Capsule(style: .continuous)
+                                .stroke(.green, lineWidth: 1)
+                        }
+                    }
+            }
+            .labelStyle(.titleAndIcon)
         }
     }
 
