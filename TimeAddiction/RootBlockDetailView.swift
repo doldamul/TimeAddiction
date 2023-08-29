@@ -55,9 +55,6 @@ struct RootBlockDetailView: View {
         .onChange(of: rootTimeBlock.subBlocks, initial: true) {
             refreshSubBlocks()
         }
-        .onDisappear {
-            self.subBlocks = []
-        }
     }
 }
 

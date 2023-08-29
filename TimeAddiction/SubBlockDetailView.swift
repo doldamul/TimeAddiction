@@ -13,6 +13,10 @@ struct SubBlockDetailView: View {
     @Environment(\.locale) var locale
     @Bindable var subBlock: TimeBlock
     
+    // view update at onAppear fix push/pop transition bug.
+    @State var title: String = ""
+    @State var memo: String = ""
+    
     var body: some View {
         ZStack {
             TextEditor(text: $subBlock.memo)
@@ -60,6 +64,12 @@ struct SubBlockDetailView: View {
                     .font(.headline)
                 }
             }
+        }
+        .onAppear {
+            self.title = subBlock.name
+        }
+        .onChange(of: title) {
+            subBlock.name = title
         }
         .safeAreaPadding()
         .navigationTitle($subBlock.name)
