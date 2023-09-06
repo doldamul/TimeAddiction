@@ -10,6 +10,7 @@
 		2A152AC62A8D9BE6009B1D1D /* DatePickerSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A152AC52A8D9BE6009B1D1D /* DatePickerSheet.swift */; };
 		2A4D51AD2A8F22B3005BDA3A /* TimeBlockView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A4D51AC2A8F22B3005BDA3A /* TimeBlockView.swift */; };
 		2A8CC69B2A974A4F006C85D9 /* RootBlockDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A8CC69A2A974A4E006C85D9 /* RootBlockDetailView.swift */; };
+		2A9E6ECB2AA2C959005B17A5 /* RotationDetectingTool.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A9E6ECA2AA2C959005B17A5 /* RotationDetectingTool.swift */; };
 		2AA49D892A8E087800700475 /* TimeBlockAddingSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2AA49D882A8E087800700475 /* TimeBlockAddingSheet.swift */; };
 		2AB58FF72A92B64B00B85638 /* DateFormatingTool.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2AB58FF62A92B64B00B85638 /* DateFormatingTool.swift */; };
 		2AB58FF92A92E0C900B85638 /* SubBlockDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2AB58FF82A92E0C900B85638 /* SubBlockDetailView.swift */; };
@@ -26,6 +27,7 @@
 		2A152AC52A8D9BE6009B1D1D /* DatePickerSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DatePickerSheet.swift; sourceTree = "<group>"; };
 		2A4D51AC2A8F22B3005BDA3A /* TimeBlockView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimeBlockView.swift; sourceTree = "<group>"; };
 		2A8CC69A2A974A4E006C85D9 /* RootBlockDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RootBlockDetailView.swift; sourceTree = "<group>"; };
+		2A9E6ECA2AA2C959005B17A5 /* RotationDetectingTool.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RotationDetectingTool.swift; sourceTree = "<group>"; };
 		2AA49D882A8E087800700475 /* TimeBlockAddingSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimeBlockAddingSheet.swift; sourceTree = "<group>"; };
 		2AB58FF62A92B64B00B85638 /* DateFormatingTool.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DateFormatingTool.swift; sourceTree = "<group>"; };
 		2AB58FF82A92E0C900B85638 /* SubBlockDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubBlockDetailView.swift; sourceTree = "<group>"; };
@@ -81,6 +83,7 @@
 				2A152AC52A8D9BE6009B1D1D /* DatePickerSheet.swift */,
 				2AA49D882A8E087800700475 /* TimeBlockAddingSheet.swift */,
 				2AB58FF62A92B64B00B85638 /* DateFormatingTool.swift */,
+				2A9E6ECA2AA2C959005B17A5 /* RotationDetectingTool.swift */,
 			);
 			path = TimeAddiction;
 			sourceTree = "<group>";
@@ -171,6 +174,7 @@
 				2AB58FF72A92B64B00B85638 /* DateFormatingTool.swift in Sources */,
 				2AB58FF92A92E0C900B85638 /* SubBlockDetailView.swift in Sources */,
 				2A4D51AD2A8F22B3005BDA3A /* TimeBlockView.swift in Sources */,
+				2A9E6ECB2AA2C959005B17A5 /* RotationDetectingTool.swift in Sources */,
 				2AF56BE22A8C849300CAC481 /* DayBlock.swift in Sources */,
 				2AA49D892A8E087800700475 /* TimeBlockAddingSheet.swift in Sources */,
 				2AF56BE42A8C8CB600CAC481 /* PreviewSwiftData.swift in Sources */,

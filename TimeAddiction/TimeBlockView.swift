@@ -11,6 +11,7 @@ import RegexBuilder
 
 // MARK: TimeBlock RootView & SubView Navigation Container
 struct TimeBlockView: View {
+    @Environment(\.isLandscape) var isLandscape
     @Environment(\.locale) var locale
     @Environment(\.modelContext) var modelContext
     let comparator = KeyPathComparator<TimeBlock>(\.startTime)
@@ -117,6 +118,7 @@ extension TimeBlockView {
                     }
             }
             .labelStyle(.titleAndIcon)
+            .id(isLandscape)
         }
     }
 
@@ -164,6 +166,7 @@ extension TimeBlockView {
                     }
                 }
             }
+            .id(isLandscape)
         }
     }
     

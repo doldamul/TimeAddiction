@@ -10,6 +10,7 @@ import SwiftData
 
 // MARK: FetchDescriptor Inject View
 struct ContentView: View {
+    @State var isLandscape: Bool = false
     @State var selectedDate: Date = .today
     @State var fetchDescriptor: FetchDescriptor<DayBlock> = {
         let today = Date.today
@@ -28,11 +29,16 @@ struct ContentView: View {
             .onChange(of: selectedDate) {
                 fetchDescriptor.predicate = #Predicate<DayBlock> { selectedDate == $0.date }
             }
+            .onRotate { orientation in
+                isLandscape = orientation.isLandscape
+            }
+            .environment(\.isLandscape, isLandscape)
     }
 }
 
 // MARK: Main View
 fileprivate struct DayBlockView: View {
+    @Environment(\.isLandscape) var isLandscape
     @Environment(\.locale) var locale
     @Environment(\.modelContext) var modelContext
     let comparator = KeyPathComparator<TimeBlock>(\.startTime)
@@ -181,6 +187,7 @@ extension DayBlockView {
                 }
             }
             .labelStyle(.titleAndIcon)
+            .id(isLandscape)
         }
     }
     
@@ -221,6 +228,7 @@ extension DayBlockView {
                 }
                 .buttonStyle(.bordered)
                 .buttonBorderShape(.capsule)
+                .id(isLandscape)
             } else {
                 Button { isTimeBlockAddingSheet = true } label: {
                     Label("타임블록 추가", systemImage: "plus")
@@ -230,6 +238,7 @@ extension DayBlockView {
                 .buttonStyle(.borderedProminent)
                 .buttonBorderShape(.capsule)
                 .disabled(selectedDate != Date.today)
+                .id(isLandscape)
             }
         }
     }
