@@ -140,12 +140,9 @@ extension DayBlockView {
 extension DayBlockView {
     @ViewBuilder
     func navigationItem(timeBlock: TimeBlock) -> some View {
-        let name = timeBlock.name
-        let duration = timeBlock.duration.durationFormatted(locale)
-        
         NavigationLink(value: timeBlock) {
             HStack {
-                Text(name)
+                Text(timeBlock.name)
                 Spacer()
                 if timeBlock.endTime == nil {
                     Text("진행중")
@@ -155,7 +152,7 @@ extension DayBlockView {
                             Capsule(style: .continuous)
                                 .stroke(.green, lineWidth: 1)
                         }
-                    TimelineView(.periodic(from: timeBlock.startTime, by: 60.0)) { _ in
+                    TimelineView(.periodic(from: timeBlock.startTime, by: 1.0)) { _ in
                         let duration = timeBlock.duration.durationFormatted(locale)
                         Text(duration)
                     }
