@@ -134,11 +134,12 @@
 			};
 			buildConfigurationList = 2AF56BC92A8C807F00CAC481 /* Build configuration list for PBXProject "TimeAddiction" */;
 			compatibilityVersion = "Xcode 14.0";
-			developmentRegion = en;
+			developmentRegion = ko;
 			hasScannedForEncodings = 0;
 			knownRegions = (
 				en,
 				Base,
+				ko,
 			);
 			mainGroup = 2AF56BC52A8C807F00CAC481;
 			productRefGroup = 2AF56BCF2A8C807F00CAC481 /* Products */;

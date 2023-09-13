@@ -68,6 +68,9 @@ struct SubBlockDetailView: View {
         .safeAreaPadding()
         .navigationTitle($subBlock.name)
         .navigationBarTitleDisplayMode(.inline)
+        .toolbarTitleMenu {
+            RenameButton()
+        }
     }
 }
 
