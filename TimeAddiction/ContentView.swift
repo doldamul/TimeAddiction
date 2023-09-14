@@ -12,22 +12,29 @@ import SwiftData
 struct ContentView: View {
     @State var isLandscape: Bool = false
     @State var selectedDate: Date = .today
-    @State var fetchDescriptor: FetchDescriptor<DayBlock> = {
+    @State var dayBlockFetchDescriptor: FetchDescriptor<DayBlock> = {
         let today = Date.today
-        let predicate = #Predicate<DayBlock> { today == $0.date }
-        var fetchDescriptor = FetchDescriptor<DayBlock>(predicate: predicate)
+        var fetchDescriptor = FetchDescriptor<DayBlock>()
         fetchDescriptor.fetchLimit = 1
         fetchDescriptor.relationshipKeyPathsForPrefetching = [\DayBlock.timeBlocks]
         return fetchDescriptor
     }()
+    
+    @State var timeBlockFetchDescriptor: FetchDescriptor<TimeBlock> = {
+        let today = Date.today
+        let sortDescriptor = SortDescriptor<TimeBlock>(\.startTime)
+        let fetchDescriptor = FetchDescriptor<TimeBlock>(sortBy: [sortDescriptor])
+        return fetchDescriptor
+    }()
 
     var body: some View {
-        DayBlockView(fetchDescriptor, selectedDate: $selectedDate)
+        DayBlockView(dayBlockFetchDescriptor, timeBlockFetchDescriptor, selectedDate: $selectedDate)
             .onReceive(NotificationCenter.default.publisher(for: UIApplication.significantTimeChangeNotification)) { _ in
                 if selectedDate != Date.today { selectedDate = Date.today }
             }
-            .onChange(of: selectedDate) {
-                fetchDescriptor.predicate = #Predicate<DayBlock> { selectedDate == $0.date }
+            .onChange(of: selectedDate, initial: true) {
+                dayBlockFetchDescriptor.predicate = dayBlockPredicate
+                timeBlockFetchDescriptor.predicate = timeBlockPredicate
             }
             .onRotate { orientation in
                 isLandscape = orientation.isLandscape
@@ -36,25 +43,41 @@ struct ContentView: View {
     }
 }
 
+extension ContentView {
+    var dayBlockPredicate: Predicate<DayBlock> {
+        #Predicate<DayBlock> { selectedDate == $0.date }
+    }
+    
+    var timeBlockPredicate: Predicate<TimeBlock> {
+        #Predicate<TimeBlock> {
+            $0.parentDay.flatMap { dayBlock in
+                dayBlock.date == selectedDate
+            } == true
+        }
+    }
+}
+
 // MARK: Main View
 fileprivate struct DayBlockView: View {
     @Environment(\.isLandscape) var isLandscape
     @Environment(\.locale) var locale
     @Environment(\.modelContext) var modelContext
-    let comparator = KeyPathComparator<TimeBlock>(\.startTime)
     
     @Binding var selectedDate: Date
     @Query var dayBlockContainer: [DayBlock]
     var dayBlock: DayBlock? { dayBlockContainer.first }
-    @State var timeBlocks: [TimeBlock] = []
+    @Query var timeBlocks: [TimeBlock]
     
     @State var selectedTimeBlock: TimeBlock?
     @State var isDatePickerSheet: Bool = false
     @State var isTimeBlockAddingSheet: Bool = false
     @State var timeBlockSheetTempTitle: String = ""
     
-    init(_ fetchDescriptor: FetchDescriptor<DayBlock>, selectedDate: Binding<Date>) {
-        self._dayBlockContainer = Query(fetchDescriptor)
+    init(_ dayBlockfetchDescriptor: FetchDescriptor<DayBlock>, 
+         _ timeBlockfetchDescriptor: FetchDescriptor<TimeBlock>,
+         selectedDate: Binding<Date>) {
+        self._dayBlockContainer = Query(dayBlockfetchDescriptor)
+        self._timeBlocks = Query(timeBlockfetchDescriptor)
         self._selectedDate = selectedDate
     }
     
@@ -88,14 +111,11 @@ fileprivate struct DayBlockView: View {
         .onChange(of: selectedDate, initial: true) {
             checkAndAddDayBlock(date: selectedDate)
         }
-        .onChange(of: dayBlock, initial: true) {
-            refreshTimeBlocks()
-        }
         .sheet(isPresented: $isDatePickerSheet) {
             DatePickerSheet(selectedDate: $selectedDate)
         }
         .sheet(isPresented: $isTimeBlockAddingSheet) {
-            TimeBlockAddingSheet(title: $timeBlockSheetTempTitle, dayBlock: dayBlock!, timeBlocks: $timeBlocks)
+            TimeBlockAddingSheet(title: $timeBlockSheetTempTitle, dayBlock: dayBlock!)
         }
     }
 }
@@ -113,26 +133,17 @@ extension DayBlockView {
         }
     }
     
-    func refreshTimeBlocks() {
-        if let dayBlock {
-            self.timeBlocks = dayBlock.timeBlocks.sorted(using: comparator)
-        } else {
-            self.timeBlocks = []
-        }
-    }
-    
     func endTimeBlock(_ timeBlock: TimeBlock) {
+        let comparator = KeyPathComparator<TimeBlock>(\.startTime)
         let lastSubBlock = timeBlock.subBlocks.sorted(using: comparator).last!
         let now = Date.now
         lastSubBlock.endTime = now
         timeBlock.endTime = now
-        refreshTimeBlocks()
     }
     
     func deleteTimeBlock(_ timeBlock: TimeBlock) {
         modelContext.delete(timeBlock)
         try? modelContext.save()
-        refreshTimeBlocks()
     }
 }
 

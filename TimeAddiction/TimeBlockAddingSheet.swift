@@ -15,7 +15,6 @@ struct TimeBlockAddingSheet: View {
     @Binding var title: String
     
     var dayBlock: DayBlock
-    @Binding var timeBlocks: [TimeBlock]
     
     var body: some View {
         NavigationStack {
@@ -65,7 +64,6 @@ struct TimeBlockAddingSheet: View {
         dayBlock.timeBlocks.append(newRootBlock)
         newRootBlock.subBlocks.append(newSubBlock)
         
-        timeBlocks.append(newRootBlock)
         title = ""
         dismiss()
     }
@@ -77,7 +75,6 @@ struct TimeBlockAddingSheetPreview: View {
     
     @State var isTimeBlockAddingSheet = false
     @Query var dayBlocks: [DayBlock]
-    @State var timeBlocks: [TimeBlock] = []
     
     @State var timeBlockSheetTempTitle = ""
     
@@ -101,7 +98,7 @@ struct TimeBlockAddingSheetPreview: View {
             }
         }
         .sheet(isPresented: $isTimeBlockAddingSheet) {
-            TimeBlockAddingSheet(title: $timeBlockSheetTempTitle, dayBlock: dayBlocks.first!, timeBlocks: $timeBlocks)
+            TimeBlockAddingSheet(title: $timeBlockSheetTempTitle, dayBlock: dayBlocks.first!)
         }
     }
 }
