@@ -66,12 +66,12 @@ fileprivate struct DayBlockView: View {
                 }
             }
             .overlay {
-                if let dayBlock {
-                    if dayBlock.timeBlocks.isEmpty {
-                        Self.timeBlockUnavailable
+                if dayBlock == nil || dayBlock!.timeBlocks.isEmpty == true {
+                    if selectedDate == .today {
+                        Self.todayTimeBlockUnavailable
+                    } else {
+                        Self.otherDayTimeBlockUnavailable
                     }
-                } else { // not today, empty timeblock
-                    Self.dayBlockUnavailable
                 }
             }
             .navigationBarTitleDisplayMode(.inline)
@@ -240,7 +240,7 @@ extension DayBlockView {
         }
     }
     
-    static var dayBlockUnavailable: some View {
+    static var otherDayTimeBlockUnavailable: some View {
         ContentUnavailableView {
             Label("비어있음", systemImage: "tray")
         } description: {
@@ -249,7 +249,7 @@ extension DayBlockView {
         .allowsHitTesting(false)
     }
     
-    static var timeBlockUnavailable: some View {
+    static var todayTimeBlockUnavailable: some View {
         ContentUnavailableView {
             Label("비어있음", systemImage: "note")
         } description: {
