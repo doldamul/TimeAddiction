@@ -207,7 +207,3 @@ fileprivate struct TimeBlockPreview: View {
         .modelContainer(PreviewSwiftData.container)
         .environment(\.locale, .init(identifier: "ko_KR"))
 }
-
-#Preview("Unavailable") {
-    TimeBlockView.subBlockUnavailable
-}

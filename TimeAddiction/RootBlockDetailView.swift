@@ -188,7 +188,3 @@ fileprivate struct TimeBlockRootPreview: View {
         .modelContainer(PreviewSwiftData.container)
         .environment(\.locale, Locale(identifier: "ko_KR"))
 }
-
-#Preview("Unavailable") {
-    RootBlockDetailView.subBlockUnavailable
-}

@@ -285,13 +285,3 @@ extension DayBlockView {
         .modelContainer(PreviewSwiftData.container)
         .environment(\.locale, Locale(identifier: "ko_KR"))
 }
-
-#Preview("Unavailable") {
-    TabView {
-        DayBlockView.dayBlockUnavailable
-        DayBlockView.timeBlockUnavailable
-        DayBlockView.detailUnavailable
-    }
-    .tabViewStyle(.page(indexDisplayMode: .always))
-    .background(.regularMaterial)
-}
