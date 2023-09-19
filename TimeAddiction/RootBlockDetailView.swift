@@ -11,10 +11,9 @@ import SwiftData
 struct RootBlockDetailView: View {
     @Environment(\.locale) var locale
     @Environment(\.modelContext) var modelContext
-    let comparator = KeyPathComparator<TimeBlock>(\.startTime)
     
-    @Bindable var rootTimeBlock: TimeBlock
-    @Binding var subBlocks: [TimeBlock]
+    var rootTimeBlock: TimeBlock
+    var subBlocks: [TimeBlock]
     
     var body: some View {
         VStack {
@@ -41,7 +40,6 @@ struct RootBlockDetailView: View {
             }
             
             GroupBox {
-                // subBlock.last! is failed at before onAppear called
                 if !isEnded, let subBlock = subBlocks.last {
                     currentSubBlockItem(subBlock)
                     Divider()
@@ -52,9 +50,6 @@ struct RootBlockDetailView: View {
             }
             .safeAreaPadding()
         }
-        .onChange(of: rootTimeBlock.subBlocks, initial: true) {
-            refreshSubBlocks()
-        }
     }
 }
 
@@ -62,10 +57,6 @@ struct RootBlockDetailView: View {
 extension RootBlockDetailView {
     private var isEnded: Bool {
         rootTimeBlock.endTime != nil
-    }
-    
-    func refreshSubBlocks() {
-        self.subBlocks = rootTimeBlock.subBlocks.sorted(using: comparator)
     }
 }
 
@@ -175,7 +166,7 @@ fileprivate struct TimeBlockRootPreview: View {
     var body: some View {
         Group {
             if let timeBlock = timeBlocks.first {
-                RootBlockDetailView(rootTimeBlock: timeBlock, subBlocks: $subBlocks)
+                RootBlockDetailView(rootTimeBlock: timeBlock, subBlocks: subBlocks)
             } else {
                 Text("empty")
             }

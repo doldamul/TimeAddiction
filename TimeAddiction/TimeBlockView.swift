@@ -9,21 +9,53 @@ import SwiftUI
 import SwiftData
 import RegexBuilder
 
+struct TimeBlockViewWrapper: View {
+    @Binding var rootTimeBlock: TimeBlock?
+    @State var subBlocksFetchDescriptor: FetchDescriptor<TimeBlock> = {
+        FetchDescriptor(sortBy: [.init(\TimeBlock.startTime)])
+    }()
+    
+    var body: some View {
+        TimeBlockView(subBlocksFetchDescriptor, rootTimeBlock: $rootTimeBlock)
+            .onChange(of: rootTimeBlock, initial: true) {
+                subBlocksFetchDescriptor.predicate = subBlocksPredicate
+            }
+    }
+}
+
+extension TimeBlockViewWrapper {
+    var subBlocksPredicate: Predicate<TimeBlock> {
+        if let parentBlockID = self.rootTimeBlock?.persistentModelID {
+            #Predicate { timeBlock in
+                timeBlock.parent.flatMap { parentBlock in
+                    parentBlockID == parentBlock.persistentModelID
+                } == true
+            }
+        } else {
+            Predicate.false
+        }
+    }
+}
+
 // MARK: TimeBlock RootView & SubView Navigation Container
 struct TimeBlockView: View {
     @Environment(\.isLandscape) var isLandscape
     @Environment(\.locale) var locale
     @Environment(\.modelContext) var modelContext
-    let comparator = KeyPathComparator<TimeBlock>(\.startTime)
     
     @Binding var rootTimeBlock: TimeBlock?
-    @State var subBlocks: [TimeBlock] = []
+    @Query var subBlocks: [TimeBlock]
+    
+    init(_ fetchDescriptor: FetchDescriptor<TimeBlock>, rootTimeBlock: Binding<TimeBlock?>) {
+        _rootTimeBlock = rootTimeBlock
+        _subBlocks = Query(fetchDescriptor)
+    }
     
     var body: some View {
         NavigationStack {
             Group {
                 if let rootTimeBlock {
-                    RootBlockDetailView(rootTimeBlock: rootTimeBlock, subBlocks: $subBlocks)
+                    RootBlockDetailView(rootTimeBlock: rootTimeBlock, subBlocks: subBlocks)
                 } else {
                     Self.rootBlockUnavailable
                 }
@@ -195,7 +227,7 @@ fileprivate struct TimeBlockPreview: View {
     @State var timeBlock: TimeBlock?
     
     var body: some View {
-        TimeBlockView(rootTimeBlock: $timeBlock)
+        TimeBlockViewWrapper(rootTimeBlock: $timeBlock)
         .onAppear {
             timeBlock = timeBlocks.first
         }

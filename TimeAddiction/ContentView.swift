@@ -105,7 +105,7 @@ fileprivate struct DayBlockView: View {
                 bottomBarItem
             }
         } detail: {
-            TimeBlockView(rootTimeBlock: $selectedTimeBlock)
+            TimeBlockViewWrapper(rootTimeBlock: $selectedTimeBlock)
         }
         .navigationSplitViewStyle(.balanced)
         .onChange(of: selectedDate, initial: true) {
