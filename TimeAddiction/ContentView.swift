@@ -142,6 +142,7 @@ extension DayBlockView {
     }
     
     func deleteTimeBlock(_ timeBlock: TimeBlock) {
+        selectedTimeBlock = nil
         modelContext.delete(timeBlock)
         try? modelContext.save()
     }
