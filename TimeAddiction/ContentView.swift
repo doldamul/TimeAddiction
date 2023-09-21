@@ -14,7 +14,7 @@ struct ContentView: View {
     @State var selectedDate: Date = .today
     @State var dayBlockFetchDescriptor: FetchDescriptor<DayBlock> = {
         let today = Date.today
-        var fetchDescriptor = FetchDescriptor<DayBlock>()
+        var fetchDescriptor = FetchDescriptor<DayBlock>(predicate: .false)
         fetchDescriptor.fetchLimit = 1
         fetchDescriptor.relationshipKeyPathsForPrefetching = [\DayBlock.timeBlocks]
         return fetchDescriptor
@@ -23,7 +23,7 @@ struct ContentView: View {
     @State var timeBlockFetchDescriptor: FetchDescriptor<TimeBlock> = {
         let today = Date.today
         let sortDescriptor = SortDescriptor<TimeBlock>(\.startTime)
-        let fetchDescriptor = FetchDescriptor<TimeBlock>(sortBy: [sortDescriptor])
+        let fetchDescriptor = FetchDescriptor<TimeBlock>(predicate: .false, sortBy: [sortDescriptor])
         return fetchDescriptor
     }()
 
